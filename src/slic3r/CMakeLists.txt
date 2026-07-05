@@ -390,6 +390,10 @@ set(SLIC3R_GUI_SOURCES
     GUI/UserManager.cpp
     GUI/HttpServer.hpp
     GUI/HttpServer.cpp
+    GUI/ControlAPI/ControlServer.hpp
+    GUI/ControlAPI/ControlServer.cpp
+    GUI/ControlAPI/ControlHandlers.hpp
+    GUI/ControlAPI/ControlHandlers.cpp
     Config/Snapshot.cpp
     Config/Snapshot.hpp
     Config/Version.cpp

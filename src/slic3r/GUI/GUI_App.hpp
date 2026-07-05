@@ -23,6 +23,7 @@
 #include "slic3r/GUI/fila_manager/wgtFilaManagerCloudDispatcher.h"
 #include "slic3r/GUI/Jobs/UpgradeNetworkJob.hpp"
 #include "slic3r/GUI/HttpServer.hpp"
+#include "slic3r/GUI/ControlAPI/ControlServer.hpp"
 #include "slic3r/GUI/UnsavedChangesDialog.hpp"
 #include "../Utils/PrintHost.hpp"
 #include "slic3r/GUI/GLEnums.hpp"
@@ -371,6 +372,9 @@ private:
     wxString         m_info_dialog_content;
     wxString         m_install_preset_fail_text;
     HttpServer       m_http_server;
+    // Local Control API (ControlAPI/ControlServer.hpp): off by default, started
+    // from post_init() when enabled via app config or BAMBU_CONTROL_API=1.
+    std::unique_ptr<ControlAPI::ControlServer> m_control_api_server;
 #if !BBL_RELEASE_TO_PUBLIC
     std::function<void(const nlohmann::json&)> m_fila_debug_sink;
 #endif

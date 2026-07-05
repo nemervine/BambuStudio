@@ -1098,6 +1098,29 @@ void GUI_App::post_init()
         BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << " sync_user_preset: false";
     }
 
+    // Local Control API for external automation (see ControlAPI/ControlServer.hpp).
+    // Off by default; opt in via app config or environment so the API can never
+    // surprise a user who didn't ask for it.
+    {
+        wxString env_enable;
+        const bool enabled = app_config->get_bool("enable_control_api") ||
+                             (wxGetEnv("BAMBU_CONTROL_API", &env_enable) && env_enable == "1");
+        if (enabled) {
+            int port = ControlAPI::DEFAULT_CONTROL_API_PORT;
+            const std::string port_str = app_config->get("control_api_port");
+            if (!port_str.empty()) {
+                try { port = std::stoi(port_str); }
+                catch (const std::exception&) {
+                    BOOST_LOG_TRIVIAL(warning) << "control_api: invalid control_api_port '" << port_str
+                                               << "', using default " << port;
+                }
+            }
+            m_control_api_server = std::make_unique<ControlAPI::ControlServer>();
+            if (!m_control_api_server->start(port))
+                m_control_api_server.reset();
+        }
+    }
+
 
 
     wxGetApp().report_consent_common(app_config->get("firstguide", "privacyuse") == "true"? true : false, "studio_improvement_policy_enable", "StudioImprovementPolicy");
@@ -2797,6 +2820,11 @@ int GUI_App::OnExit()
 #ifdef __APPLE__
     UnRegisterMacPowerCallBack();
 #endif
+
+    if (m_control_api_server) {
+        m_control_api_server->stop();
+        m_control_api_server.reset();
+    }
 
     stop_sync_user_preset();
 
