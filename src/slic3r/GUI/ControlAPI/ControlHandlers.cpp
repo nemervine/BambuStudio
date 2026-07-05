@@ -304,7 +304,7 @@ static json object_to_json(const ModelObject* object, size_t index)
         j["scale"]     = vec3d_to_json(instance->get_scaling_factor());
     }
     j["volume_count"] = object->volumes.size();
-    const BoundingBoxf3 bb = object->bounding_box_exact();
+    const BoundingBoxf3 bb = object->bounding_box();
     j["bbox_min"] = vec3d_to_json(bb.min);
     j["bbox_max"] = vec3d_to_json(bb.max);
     return j;
